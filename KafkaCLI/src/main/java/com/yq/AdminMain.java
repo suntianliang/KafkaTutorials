@@ -32,7 +32,7 @@ public class AdminMain {
 
 
     private static final String SERVERS = "ubuntu:9092";
-    private static final String GROUP_ID = "yq-consumer03";
+    private static final String GROUP_ID = "yq-consumer09";
 
 //    public static void main(String... args) throws Exception {
 //
@@ -81,7 +81,6 @@ public class AdminMain {
         props.put("enable.auto.commit", "true");
         props.put("auto.offset.reset", "earliest");
         props.put("auto.commit.interval.ms", "1000");
-        props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
@@ -92,10 +91,12 @@ public class AdminMain {
         Properties props = new Properties();
         props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, SERVERS);
         AdminClient adminClient = AdminClient.create(props);
+
         AdminClient.ConsumerGroupSummary  consumerGroupSummary =  adminClient.describeConsumerGroup(GROUP_ID, 5000);
         if(consumerGroupSummary.state().equals("Empty")){
             System.out.println("No grp summary");
         }
+        System.out.println("consumerGrpSummary State " +  consumerGroupSummary.state());
         Option<List<AdminClient.ConsumerSummary>> consumerSummaryOption =  consumerGroupSummary.consumers();
 
         List<AdminClient.ConsumerSummary> ConsumerSummarys = consumerSummaryOption.get();
@@ -103,7 +104,7 @@ public class AdminMain {
         scala.collection.immutable.Map<TopicPartition, Object> maps =  adminClient.listGroupOffsets(GROUP_ID);
         scala.collection.Set<TopicPartition> topicPartitions = maps.keySet();
         scala.collection.immutable.List<TopicPartition> topicPartitionList = topicPartitions.reversed();
-        for(int j =0;j< topicPartitionList.size();j++){
+        for(int j =0; j< topicPartitionList.size(); j++){
             TopicPartition topicPartition = topicPartitionList.apply(j);
 
             String currentOffset = maps.get(topicPartition).get().toString();
