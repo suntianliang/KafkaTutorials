@@ -31,7 +31,7 @@ import static scala.concurrent.JavaConversions.*;
 public class AdminMain {
 
 
-    private static final String SERVERS = "127.0.0.1:9092";
+    private static final String SERVERS = "ubuntu:9092";
     private static final String GROUP_ID = "yq-consumer03";
 
 //    public static void main(String... args) throws Exception {
@@ -100,7 +100,6 @@ public class AdminMain {
 
         List<AdminClient.ConsumerSummary> ConsumerSummarys = consumerSummaryOption.get();
 
-        scala.collection.immutable.Map<TopicPartition, Object> map = adminClient.listGroupOffsets("yq-consumer03");
         scala.collection.immutable.Map<TopicPartition, Object> maps =  adminClient.listGroupOffsets(GROUP_ID);
         scala.collection.Set<TopicPartition> topicPartitions = maps.keySet();
         scala.collection.immutable.List<TopicPartition> topicPartitionList = topicPartitions.reversed();
@@ -109,7 +108,7 @@ public class AdminMain {
 
             String currentOffset = maps.get(topicPartition).get().toString();
             long groupLastEndOffset = getLogEndOffset(topicPartition);
-            long lag = Long.valueOf(currentOffset) - groupLastEndOffset;
+            long lag =  groupLastEndOffset -Long.valueOf(currentOffset);
             System.out.println("topic："+topicPartition.topic()+",  partition:" + topicPartition.partition() + ", offset："
                     +currentOffset+ ", groupLastEndOffset："+ groupLastEndOffset + ", lag:"+ lag);
         }
