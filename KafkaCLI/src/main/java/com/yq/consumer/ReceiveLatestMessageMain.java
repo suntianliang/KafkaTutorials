@@ -41,8 +41,7 @@ public class ReceiveLatestMessageMain {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
-        //每次必须换一个组，并且
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "yq-consumer03");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "yq-consumer11");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 20);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
