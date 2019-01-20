@@ -1,31 +1,23 @@
 package com.yq;
 
 import kafka.admin.AdminClient;
-import kafka.coordinator.group.GroupOverview;
 import lombok.extern.slf4j.Slf4j;
-//import org.apache.kafka.clients.CommonClientConfigs;
-//import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import scala.Option;
 import scala.collection.immutable.List;
-import scala.concurrent.JavaConversions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-
 import java.util.Properties;
 
-import static scala.concurrent.JavaConversions.*;
 
 /**
  * Simple to Introduction
  * className: SendMessageMain
  *
  * @author EricYang
- * @version 2018/7/10 11:30
+ * @version 2019/01/10 11:30
  */
 @Slf4j
 public class AdminMain {
@@ -71,6 +63,7 @@ public class AdminMain {
         consumer.assign(Arrays.asList(topicPartition));
         consumer.seekToEnd(Arrays.asList(topicPartition));
         long endOffset = consumer.position(topicPartition);
+        consumer.close();
         return endOffset;
     }
 
@@ -99,7 +92,6 @@ public class AdminMain {
         System.out.println("consumerGrpSummary State " +  consumerGroupSummary.state());
         Option<List<AdminClient.ConsumerSummary>> consumerSummaryOption =  consumerGroupSummary.consumers();
 
-        List<AdminClient.ConsumerSummary> ConsumerSummarys = consumerSummaryOption.get();
 
         scala.collection.immutable.Map<TopicPartition, Object> maps =  adminClient.listGroupOffsets(GROUP_ID);
         scala.collection.Set<TopicPartition> topicPartitions = maps.keySet();
@@ -111,7 +103,9 @@ public class AdminMain {
             long groupLastEndOffset = getLogEndOffset(topicPartition);
             long lag =  groupLastEndOffset -Long.valueOf(currentOffset);
             System.out.println("topic："+topicPartition.topic()+",  partition:" + topicPartition.partition() + ", offset："
-                    +currentOffset+ ", groupLastEndOffset："+ groupLastEndOffset + ", lag:"+ lag);
+                    + currentOffset + ", groupLastEndOffset："+ groupLastEndOffset + ", lag:"+ lag);
         }
+
+        adminClient.close();
     }
 }

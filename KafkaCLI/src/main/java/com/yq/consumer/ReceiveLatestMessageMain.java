@@ -1,6 +1,7 @@
 package com.yq.consumer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -11,9 +12,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartition;
-
-import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.TopicPartitionInfo;
 
 import java.util.Arrays;
@@ -29,7 +27,7 @@ import java.util.Properties;
  * className: SendMessageMain
  *
  * @author EricYang
- * @version 2018/7/10 11:30
+ * @version 2019/01/10 11:30
  */
 @Slf4j
 public class ReceiveLatestMessageMain {
@@ -165,6 +163,7 @@ public class ReceiveLatestMessageMain {
             ex.printStackTrace();
             System.out.println("when calling kafka output error." + ex.getMessage());
         } finally {
+            adminClient.close();
             consumer.close();
         }
     }
