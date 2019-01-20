@@ -65,9 +65,11 @@ public class ReceiveLatestMessageMain {
                     TopicPartition topicPartition = new TopicPartition(topic, partitionId);
                     Map<TopicPartition, Long> mapBeginning = consumer.beginningOffsets(Arrays.asList(topicPartition));
                     Iterator<Map.Entry<TopicPartition, Long>> itr2 = mapBeginning.entrySet().iterator();
+                    long beginOffset = 0;
+                    //mapBeginning只有一个元素，因为Arrays.asList(topicPartition)只有一个topicPartition
                     while(itr2.hasNext()) {
                         Map.Entry<TopicPartition, Long> tmpEntry = itr2.next();
-                        System.out.println("beginningOffset of partitionId: " + tmpEntry.getKey().partition() + "  is " + tmpEntry.getValue());
+                        beginOffset =  tmpEntry.getValue();
                     }
                     Map<TopicPartition, Long> mapEnd = consumer.endOffsets(Arrays.asList(topicPartition));
                     Iterator<Map.Entry<TopicPartition, Long>> itr3 = mapEnd.entrySet().iterator();
@@ -75,13 +77,12 @@ public class ReceiveLatestMessageMain {
                     while(itr3.hasNext()) {
                         Map.Entry<TopicPartition, Long> tmpEntry2 = itr3.next();
                         lastOffset = tmpEntry2.getValue();
-                        System.out.println("endOffset of partitionId: " + tmpEntry2.getKey().partition() + "  is " + lastOffset);
                     }
-                    long expectedOffSet = lastOffset - 1 - COUNT;
+                    long expectedOffSet = lastOffset - COUNT;
                     expectedOffSet = expectedOffSet > 0? expectedOffSet : 1;
-                    System.out.println("Leader of partitionId: " + partitionId + "  is " + node + ".  expectedOffSet:"+ expectedOffSet);
+                    System.out.println("Leader of partitionId: " + partitionId + "  is " + node + ".  expectedOffSet:"+ expectedOffSet
+                    + "，  beginOffset:" + beginOffset + ", lastOffset:" + lastOffset);
                     consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(expectedOffSet -1 )));
-
                 });
             }
 
