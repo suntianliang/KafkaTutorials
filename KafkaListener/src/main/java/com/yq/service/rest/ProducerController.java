@@ -40,41 +40,16 @@ public class ProducerController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProducerController.class);
 
-    @ApiOperation(value = "send")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "topic", value = "iiot.prod", required = true, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "content", value = "content", required = true, dataType = "string", paramType = "query")
-    })
-    @PostMapping(value = "/send", produces = "application/json;charset=UTF-8")
-    public String sendMsg(@RequestParam  String topic, @RequestParam String content, HttpServletResponse response) throws IOException {
-        logger.info("enter sendMsg, topic={}, content={}", topic, content);
-        producerService.send(topic, content, 1);
-
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put("currentTime", LocalDateTime.now().toString());
-
-        Cookie cookie1 = new Cookie("fullname", URLEncoder.encode("yangqian", "UTF-8"));
-        Cookie cookie2 = new Cookie("iotSecret", "iotsecrect");
-
-
-        response.addCookie(cookie1);
-        response.addCookie(cookie2);
-
-        return jsonObj.toJSONString();
-    }
 
     @ApiOperation(value = "get")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "topic", value = "iiot.prod", required = true, dataType = "string", paramType = "query")
-    })
     @GetMapping(value = "/send", produces = "application/json;charset=UTF-8")
-    public String sendMsg(@RequestParam  String topic, HttpServletResponse response) throws IOException {
+    public String sendMsg(HttpServletResponse response) throws IOException {
 
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("currentTime", LocalDateTime.now().toString());
 
-        Cookie cookie1 = new Cookie("fullname", URLEncoder.encode("yangqian", "UTF-8"));
-        Cookie cookie2 = new Cookie("iotSecret", "iotsecrect");
+        Cookie cookie1 = new Cookie("fullname", URLEncoder.encode("name1", "UTF-8"));
+        Cookie cookie2 = new Cookie("secret", "secret");
 
 
         response.addCookie(cookie1);
@@ -99,13 +74,12 @@ public class ProducerController {
 
     @ApiOperation(value = "devJsonMsg")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "topic", value = "topic", defaultValue = "iiot.prod", required = true, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "topic", value = "topic", defaultValue = "prod1", required = true, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "count", value = "发送多少遍", defaultValue = "1", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "jsonStr", value = "jsonStr", defaultValue = "jsonStr",  required = true, dataType = "DeviceMessage", paramType = "body")
     })
     @PostMapping(value = "/devJsonMsg", produces = "application/json;charset=UTF-8")
     public String createDeviceJsonMsg(@RequestParam String topic, @RequestParam int count, @RequestBody String jsonStr) {
-        //String jsonStr = JSON.toJSONString(json);
         producerService.sendJson(topic, jsonStr, count);
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("currentTime", LocalDateTime.now().toString());
