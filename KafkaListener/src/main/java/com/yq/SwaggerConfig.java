@@ -27,7 +27,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.yq.service.rest"))
+                .apis(RequestHandlerSelectors.basePackage("com.yq.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

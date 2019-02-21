@@ -1,4 +1,4 @@
-package com.yq.service.rest;
+package com.yq.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yq.domain.DeviceMessage;
@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Simple to Introduction
