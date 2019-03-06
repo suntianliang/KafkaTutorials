@@ -33,6 +33,7 @@ public class WordCountApplication {
 
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, String> textLines = builder.stream("TextLinesTopic");
+        //.Ktable：相同Key的每条记录只保存最新的一条记录，类似于数据库的基于主键更新
         KTable<String, Long> wordCounts = textLines
                 .flatMapValues(textLine -> Arrays.asList(textLine.toLowerCase().split("\\W+")))
                 .groupBy((key, word) -> word)

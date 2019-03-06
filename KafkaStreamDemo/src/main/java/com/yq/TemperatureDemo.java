@@ -88,7 +88,7 @@ public class TemperatureDemo {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> source = builder.stream("iot-temperature");
-
+        //KStream是一个由键值对构成的抽象记录流，每个键值对是一个独立的单元，即使相同的Key也不会覆盖，类似数据库的插入操作
         KStream<Windowed<String>, String> max = source
                 // temperature values are sent without a key (null), so in order
                 // to group and reduce them, a key is needed ("temp" has been chosen)
