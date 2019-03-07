@@ -36,7 +36,11 @@ public class WordCountApplication {
         //.Ktable：相同Key的每条记录只保存最新的一条记录，类似于数据库的基于主键更新
         KTable<String, Long> wordCounts = textLines
                 .flatMapValues(textLine -> Arrays.asList(textLine.toLowerCase().split("\\W+")))
-                .groupBy((key, word) -> word)
+                .groupBy((key, word) -> {
+                   // textLine="test hello"     word="test", key="".   word="hello", key=""
+                    System.out.println("key=" + key + ", word=" + word);
+                    return word;
+                })
                 .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("counts-store"));
         wordCounts.toStream().to("WordsWithCountsTopic", Produced.with(Serdes.String(), Serdes.Long()));
 
