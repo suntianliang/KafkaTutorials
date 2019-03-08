@@ -21,3 +21,21 @@ Kafka Streams定义了三种窗口：
 
 KTable<String, Long> table = stream.groupByKey()
                                    .count();
+                                   
+                                   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+                                   SLF4J: Defaulting to no-operation (NOP) logger implementation
+                                   SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+                                   aggKey:max,  newValue:10, aggKey:0
+                                   aggKey:max,  newValue:8, aggKey:0
+                                   aggKey:max,  newValue:7, aggKey:8
+                                   aggKey:max,  newValue:10, aggKey:8
+                                   aggKey:max,  newValue:6, aggKey:10
+                                   aggKey:max,  newValue:9, aggKey:10
+                                   aggKey:max,  newValue:{"temp":20, "humidity": 25}, aggKey:0
+                                   aggKey:max,  newValue:{"temp":25, "humidity": 25}, aggKey:20
+                                   aggKey:max,  newValue:{"temp":21, "humidity": 25}, aggKey:0
+                                   aggKey:max,  newValue:{"temp":22, "humidity": 25}, aggKey:21
+                                   aggKey:max,  newValue:{"temp":23, "humidity": 25}, aggKey:22
+                                   aggKey:max,  newValue:{"temp":24, "humidity": 25}, aggKey:0
+                                   aggKey:max,  newValue:{"temp":25, "humidity": 25}, aggKey:24
+                                   aggKey:max,  newValue:{"temp":22, "humidity": 25}, aggKey:25
