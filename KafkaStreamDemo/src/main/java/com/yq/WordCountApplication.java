@@ -44,6 +44,9 @@ public class WordCountApplication {
                 .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("counts-store"));
         wordCounts.toStream().to("WordsWithCountsTopic", Produced.with(Serdes.String(), Serdes.Long()));
 
+        wordCounts
+                .foreach((w, c) -> System.out.println("word: " + w + " -> " + c));
+
         KafkaStreams streams = new KafkaStreams(builder.build(), props);
         streams.start();
     }

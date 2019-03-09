@@ -1,4 +1,4 @@
-package com.yq;
+package com.yq.customized;
 
 
 import com.alibaba.fastjson.JSON;
@@ -28,17 +28,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 统计30内，温度值大于20的消息总数。  topic中的消息格式为{"temp":21, "humidity": 25}   或者数字30， 21
+ * 统计60秒内，温度值的最大值  topic中的消息格式为数字，30， 21或者{"temp":19, "humidity": 25}
  */
-public class TemperatureMsgCountDemo {
-    private static final int TEMPERATURE_THRESHOLD = 20;
-
-    private static final int TEMPERATURE_WINDOW_SIZE = 30;
+public class TemperatureAvgDemo {
+    private static final int TEMPERATURE_WINDOW_SIZE = 60;
 
     public static void main(String[] args) throws Exception {
 
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-temp-msgCount");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-temp-avg");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
@@ -49,42 +47,58 @@ public class TemperatureMsgCountDemo {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> source = builder.stream("iot-temp");
-        KTable<Windowed<String>, Long> msgCount = source
+        KTable<Windowed<String>, Statistics> max = source
                 .selectKey(new KeyValueMapper<String, String, String>() {
                     @Override
                     public String apply(String key, String value) {
-                        return "count";
+                        return "stat";
                     }
-                })
-                .filter((key, value) -> {
-                   //topic中的消息格式为{"temp":21, "humidity": 25}   或者数字
-                    System.out.println("key:" + key + ",  value:" + value);
-                    Long newValueLong = null;
-                    try {
-                        JSONObject json = JSON.parseObject(value);
-                        newValueLong = json.getLong("temp");
-                    }
-                    catch (ClassCastException ex) {
-                        newValueLong = Long.valueOf(value);
-                    }
-
-                    return newValueLong > TEMPERATURE_THRESHOLD;
                 })
                 .groupByKey()
                 .windowedBy(TimeWindows.of(TimeUnit.SECONDS.toMillis(TEMPERATURE_WINDOW_SIZE)))
-                .count();
+                .aggregate(
+                        new Initializer<Statistics>() {
+                            @Override
+                            public Statistics apply() {
+                                Statistics avgAndSum = new Statistics(0L,0L,0L);
+                                return avgAndSum;
+                            }
+                        },
+                        new Aggregator<String, String, Statistics>() {
+                            @Override
+                            public Statistics apply(String aggKey, String newValue, Statistics aggValue) {
+                                //topic中的消息格式为{"temp":19, "humidity": 25}
+                                System.out.println("aggKey:" + aggKey + ",  newValue:" + newValue + ", aggKey:" + aggValue);
+                                Long newValueLong = null;
+                                try {
+                                    JSONObject json = JSON.parseObject(newValue);
+                                    newValueLong = json.getLong("temp");
+                                }
+                                catch (ClassCastException ex) {
+                                     newValueLong = Long.valueOf(newValue);
+                                }
+
+                                aggValue.setCount(aggValue.getCount() + 1);
+                                aggValue.setSum(aggValue.getSum() + newValueLong);
+                                aggValue.setAvg(aggValue.getSum() / aggValue.getCount());
+
+                                return aggValue;
+                            }
+                        },
+                        Materialized.<String, Statistics, WindowStore<Bytes, byte[]>>as("time-windowed-aggregated-temp-stream-store")
+                                .withValueSerde(Serdes.serdeFrom(new StatisticsSerializer(), new StatisticsDeserializer()))
+                );
 
         WindowedSerializer<String> windowedSerializer = new WindowedSerializer<>(Serdes.String().serializer());
         WindowedDeserializer<String> windowedDeserializer = new WindowedDeserializer<>(Serdes.String().deserializer(), TEMPERATURE_WINDOW_SIZE);
         Serde<Windowed<String>> windowedSerde = Serdes.serdeFrom(windowedSerializer, windowedDeserializer);
 
-        // need to override key serde to Windowed<String> type
-        msgCount.toStream().to("iot-temp-msgcount", Produced.with(windowedSerde, Serdes.Long()));
+        max.toStream().to("iot-temp-stat", Produced.with(windowedSerde, Serdes.serdeFrom(new StatisticsSerializer(), new StatisticsDeserializer())));
 
         final KafkaStreams streams = new KafkaStreams(builder.build(), props);
         final CountDownLatch latch = new CountDownLatch(1);
 
-        // attach shutdown handler to catch control-c
+
         Runtime.getRuntime().addShutdownHook(new Thread("streams-temperature-shutdown-hook") {
             @Override
             public void run() {
