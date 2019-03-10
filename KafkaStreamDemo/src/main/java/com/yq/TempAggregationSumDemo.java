@@ -34,12 +34,12 @@ import java.util.concurrent.TimeUnit;
 */
 public class TempAggregationSumDemo {
 
-    private static final int TEMPERATURE_WINDOW_SIZE = 30;
+    private static final int TEMPERATURE_WINDOW_SIZE = 60;
 
     public static void main(String[] args) throws Exception {
 
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-key-sum");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-key-sum2");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());

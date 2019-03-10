@@ -1,11 +1,14 @@
-package com.yq.customized;
+package com.yq.generic;
 
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.yq.customized.Statistics;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -23,6 +26,8 @@ import org.apache.kafka.streams.kstream.internals.WindowedDeserializer;
 import org.apache.kafka.streams.kstream.internals.WindowedSerializer;
 import org.apache.kafka.streams.state.WindowStore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  *  http://kafka.apache.org/10/documentation/streams/developer-guide/datatypes.html
  * 统计60秒内，温度值的最大值  topic中的消息格式为数字，30， 21或者{"temp":19, "humidity": 25}
  */
-public class TemperatureAvgDemo {
+public class TemperatureAvgGenericSerDeDemo {
     private static final int TEMPERATURE_WINDOW_SIZE = 60;
 
     public static void main(String[] args) throws Exception {
@@ -48,6 +53,19 @@ public class TemperatureAvgDemo {
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, String> source = builder.stream("iot-temp");
+
+        Map<String, Object> serdeProps = new HashMap<>();
+
+        final Serializer<Statistics> statisticsSerializer = new JsonPOJOSerializer<>();
+        serdeProps.put("JsonPOJOClass", Statistics.class);
+        statisticsSerializer.configure(serdeProps, false);
+
+        final Deserializer<Statistics> statisticsDeserializer = new JsonPOJODeserializer<>();
+        serdeProps.put("JsonPOJOClass", Statistics.class);
+        statisticsDeserializer.configure(serdeProps, false);
+
+        final Serde<Statistics> statisticsSerde = Serdes.serdeFrom(statisticsSerializer, statisticsDeserializer);
+
         KTable<Windowed<String>, Statistics> max = source
                 .selectKey(new KeyValueMapper<String, String, String>() {
                     @Override
@@ -76,8 +94,21 @@ public class TemperatureAvgDemo {
                                     newValueLong = json.getLong("temp");
                                 }
                                 catch (ClassCastException ex) {
-                                     newValueLong = Long.valueOf(newValue);
+                                    try {
+                                        newValueLong = Long.valueOf(newValue);
+                                    }
+                                     catch (NumberFormatException e) {
+                                         System.out.println("Exception:" + e.getMessage());
+                                         //异常返回原值
+                                         return aggValue;
+                                    }
                                 }
+                                catch (Exception e) {
+                                    System.out.println("Exception:" + e.getMessage());
+                                    //异常返回原值
+                                    return aggValue;
+                                }
+
 
                                 aggValue.setCount(aggValue.getCount() + 1);
                                 aggValue.setSum(aggValue.getSum() + newValueLong);
@@ -87,14 +118,14 @@ public class TemperatureAvgDemo {
                             }
                         },
                         Materialized.<String, Statistics, WindowStore<Bytes, byte[]>>as("time-windowed-aggregated-temp-stream-store")
-                                .withValueSerde(Serdes.serdeFrom(new StatisticsSerializer(), new StatisticsDeserializer()))
+                                .withValueSerde(statisticsSerde)
                 );
 
         WindowedSerializer<String> windowedSerializer = new WindowedSerializer<>(Serdes.String().serializer());
         WindowedDeserializer<String> windowedDeserializer = new WindowedDeserializer<>(Serdes.String().deserializer(), TEMPERATURE_WINDOW_SIZE);
         Serde<Windowed<String>> windowedSerde = Serdes.serdeFrom(windowedSerializer, windowedDeserializer);
 
-        max.toStream().to("iot-temp-stat", Produced.with(windowedSerde, Serdes.serdeFrom(new StatisticsSerializer(), new StatisticsDeserializer())));
+        max.toStream().to("iot-temp-stat", Produced.with(windowedSerde, statisticsSerde));
 
         final KafkaStreams streams = new KafkaStreams(builder.build(), props);
         final CountDownLatch latch = new CountDownLatch(1);
