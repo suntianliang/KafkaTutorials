@@ -72,6 +72,7 @@ import java.util.concurrent.TimeUnit;
  * > 10
  * > 15
  * > 22
+ * 参考 官方例子https://github.com/apache/kafka/blob/1.0/streams/examples/src/main/java/org/apache/kafka/streams/examples/temperature/TemperatureDemo.java
  * 统计30秒内，温度值的最大值  topic中的消息格式为数字，30， 21或者{"temp":19, "humidity": 25}
  */
 public class TemperatureDemo {
