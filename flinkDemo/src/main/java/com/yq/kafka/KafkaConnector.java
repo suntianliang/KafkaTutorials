@@ -9,7 +9,6 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -17,11 +16,10 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import java.util.Properties;
 
 /**
- * 官方例子的copy， 版权归官方，
- *  https://github.com/apache/flink/tree/release-1.7.2/flink-examples
- * className: WindowWordCount
- *  Windows上  bin>flink run ..\example\streaming\xxxx --input  a.txt  --output b.txt
+ *  className: KafkaConnector
  *
+ *  iot-temp topic输入内容类似， hello Java， Hello Test， Hello Python, 先统计为DataStream<Tuple2<String, Integer>>
+ *  然后将DataStream<Tuple2<String, Integer>>转换为DataStream<String> ， 最后将结果写入到kafka中，结果为Kafka and Flink says: (hello,3)格式
  * @author EricYang
  * @version 2019/3/11 14:50
  */
@@ -48,12 +46,6 @@ public class KafkaConnector {
         DataStream<String> messageStream = env.addSource(
                 new FlinkKafkaConsumer<String>("iot-temp", new SimpleStringSchema(), properties));
 
-        DataStream<Tuple2<String, Integer>> counts =
-                // split up the lines in pairs (2-tuples) containing: (word,1)
-                messageStream.flatMap(new Tokenizer())
-                        // group by the tuple field "0" and sum up tuple field "1"
-                        .keyBy(0).sum(1);
-
         /*messageStream.map(new MapFunction<String, String>() {
             private static final long serialVersionUID = -6867736771747690202L;
 
@@ -62,7 +54,7 @@ public class KafkaConnector {
                 System.out.println("kafka msg=" + value);
                 return "Kafka and Flink says: " + value;
             }
-        });*/
+        });
 
         //如果addSink和counts.print();都有，在idea中只有sink生效了。
        FlinkKafkaProducer<String> myProducer = new FlinkKafkaProducer<String>(
@@ -72,7 +64,32 @@ public class KafkaConnector {
 
         myProducer.setWriteTimestampToKafka(true);
         messageStream.addSink(myProducer);
+        */
 
+        DataStream<Tuple2<String, Integer>> counts =
+                // split up the lines in pairs (2-tuples) containing: (word,1)
+                messageStream.flatMap(new Tokenizer())
+                        // group by the tuple field "0" and sum up tuple field "1"
+                        .keyBy(0).sum(1);
+
+        DataStream<String> countsString =
+                counts.map(new MapFunction<Tuple2<String, Integer>, String>() {
+                    private static final long serialVersionUID = -6867736771747690202L;
+
+                    @Override
+                    public String map(Tuple2<String, Integer> value) throws Exception {
+                        System.out.println("kafka msg=" + value);
+                        return "Kafka and Flink says: " + value;
+                    }
+                });
+
+        FlinkKafkaProducer<String> myProducer = new FlinkKafkaProducer<String>(
+                KAFKA_BROKERS,
+                "topic1",
+                new SimpleStringSchema());
+
+        myProducer.setWriteTimestampToKafka(true);
+        countsString.addSink(myProducer);
 
         // emit result
         if (parameterTool.has("output")) {
