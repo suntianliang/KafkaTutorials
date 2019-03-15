@@ -31,7 +31,6 @@ public class KafkaStatisticsMsg2 {
     private DataStream<MyStatisticsMsg> windowCounts;
 
     public static void main(String[] args) throws Exception {
-
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -59,6 +58,7 @@ public class KafkaStatisticsMsg2 {
                 return  currV;
             }
         })
+         //这里使用时间窗口，也可以选择使用countWindowAll改成计数窗口
         .timeWindowAll(Time.seconds(WINDOW_SIZE))
         .fold(new MyStatisticsMsg(0L, 0L, new Date()), new FoldFunction<Long, MyStatisticsMsg>() {
             @Override

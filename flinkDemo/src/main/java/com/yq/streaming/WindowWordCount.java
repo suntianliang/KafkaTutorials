@@ -8,7 +8,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 
 /**
- * Simple to Introduction
+ * 官方例子，copy过来为了能运行稍加改动，基本上维持原样。版权归官方
+ * https://github.com/apache/flink/tree/release-1.7.2/flink-examples
  * className: WindowWordCount
  *
  * @author EricYang
@@ -50,6 +51,7 @@ public class WindowWordCount {
                 text.flatMap(new WordCount.Tokenizer())
                         // create windows of windowSize records slided every slideSize records
                         .keyBy(0)
+                        //计数窗口
                         .countWindow(windowSize, slideSize)
                         // group by the tuple field "0" and sum up tuple field "1"
                         .sum(1);

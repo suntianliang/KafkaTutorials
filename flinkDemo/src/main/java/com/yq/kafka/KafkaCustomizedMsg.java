@@ -16,10 +16,8 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
+ * className: KafkaCustomizedMsg
  *
- *
- * className: WindowWordCount
- *  W
  *  topic中输入的hello Java，  输出topic中的内容为1,hello,1552371230138l和1,java,1552371236392l
  * @author EricYang
  * @version 2019/3/11 14:50
@@ -28,10 +26,7 @@ public class KafkaCustomizedMsg {
     private static final String KAFKA_BROKERS = "localhost:9092";
 
     public static void main(String[] args) throws Exception {
-
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
-
-        //createRemoteEnvironment(String host, int port, String... jarFiles)
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.getConfig().setGlobalJobParameters(parameterTool);

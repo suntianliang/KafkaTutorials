@@ -19,10 +19,10 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.util.Collector;
 /**
- * 官方例子的copy， 版权归官方，
+ *  官方例子的copy， 版权归官方，只是为了在本地运行起来，稍加修改
  *  https://github.com/apache/flink/tree/release-1.7.2/flink-examples
- * className: WindowWordCount
- *  Windows上  bin>flink run ..\example\streaming\xxxx --input  file://a.txt  --output b.txt 不能工作，必须使用绝对路径才行
+ *  className: WordCount
+ *  打包后，Windows上运行命令：bin>flink run ..\example\streaming\xxxx --input  a.txt  --output b.txt 不能工作，必须使用绝对路径才行
  *  E:\software\flink-1.7.2-bin-scala_2.12\flink-1.7.2\bin>flink run ..\examples\streaming\FlinkDemo-1.0-SNAPSHOT-WordCount.jar --input  E:\software\flink-1.7.2-bin-scala_2.12\flink-1.7.2\bin\a.txt
  * @author EricYang
  * @version 2019/3/11 14:50
