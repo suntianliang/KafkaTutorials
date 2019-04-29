@@ -1,6 +1,8 @@
 package com.yq.kafka;
 
 
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.api.common.JobID;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -24,8 +26,8 @@ import java.util.Properties;
  * @version 2019/3/11 14:50
  */
 public class KafkaConnector {
-    private static final String KAFKA_BROKERS = "localhost:9092";
-
+    //private static final String KAFKA_BROKERS = "localhost:9092";
+    private static final String KAFKA_BROKERS = "10.76.3.70:9092";
     public static void main(String[] args) throws Exception {
 
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -100,7 +102,9 @@ public class KafkaConnector {
         }
 
         // execute program
-        env.execute("Streaming Kafka");
+        JobExecutionResult result = env.execute("Streaming Kafka");
+        JobID jobId = result.getJobID();
+        System.out.println("jobId=" + jobId);
     }
 
     /**

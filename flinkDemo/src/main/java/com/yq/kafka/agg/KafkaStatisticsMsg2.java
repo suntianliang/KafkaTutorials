@@ -17,8 +17,7 @@ import java.util.Properties;
 
 /**
  *
- *
- *  className: KafkaStatisticsMsg2
+ *  className: KafkaSensorMsg
  *  Windows上  bin>flink run ..\example\streaming\xxxx
  *  本例子在KafkaStatisticsMsg基础上在map中将原始的String消息转换为Long供下游处理，
  *  可以直接在IDEA中运行，kafka的topic输入内容为20， 30之类的纯数字。
@@ -28,7 +27,6 @@ import java.util.Properties;
 public class KafkaStatisticsMsg2 {
     private static final String KAFKA_BROKERS = "localhost:9092";
     private static final long WINDOW_SIZE = 60L;
-    private DataStream<MyStatisticsMsg> windowCounts;
 
     public static void main(String[] args) throws Exception {
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
