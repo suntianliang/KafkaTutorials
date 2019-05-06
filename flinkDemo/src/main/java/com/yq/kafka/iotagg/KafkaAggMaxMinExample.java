@@ -88,9 +88,10 @@ public class KafkaAggMaxMinExample {
                             JSONObject resultAggJson = aggJson.getJSONObject("result");
                             if (dataJson != null) {
                                 Set<String> fields = dataJson.keySet();
-                                for(String sensorCode : fields) {
-                                    long newSensorValue = dataJson.getLongValue(sensorCode);
-                                    if (resultAggJson != null) {
+
+                                if (resultAggJson != null) {
+                                    for(String sensorCode : fields) {
+                                        long newSensorValue = dataJson.getLongValue(sensorCode);
                                         long currentMaxValue = resultAggJson.getLongValue(MAX_PREFIX + sensorCode);
                                         long currentMinValue = resultAggJson.getLongValue(MIN_PREFIX + sensorCode);
                                         if (newSensorValue > currentMaxValue) {
@@ -99,27 +100,29 @@ public class KafkaAggMaxMinExample {
                                             resultAggJson.put(MIN_PREFIX + sensorCode, newSensorValue);
                                         }
                                     }
-                                    else {
-                                        resultAggJson = new JSONObject();
-                                        //如果初始化没有值就给result附上值
+                                }
+                                else {
+                                    resultAggJson = new JSONObject();
+                                    //如果初始化没有值就给result附上值
+                                    for(String sensorCode : fields) {
+                                        long newSensorValue = dataJson.getLongValue(sensorCode);
                                         resultAggJson.put(MAX_PREFIX + sensorCode, newSensorValue);
                                         resultAggJson.put(MIN_PREFIX + sensorCode, newSensorValue);
-
-                                        aggJson.put("chainid", newMsgJson.getString("chainid"));
-                                        aggJson.put("deviceid", newMsgJson.getString("deviceid"));
                                     }
 
+                                    aggJson.put("chainid", newMsgJson.getString("chainid"));
+                                    aggJson.put("deviceid", newMsgJson.getString("deviceid"));
                                 }
-                                log.info("acc={}, value1={}, aggJson={}" , agg, value, aggJson);
-                            }
 
+                            }
+                            log.info("acc={}, value1={}, aggJson={}" , agg, value, aggJson);
 
                             aggJson.put("newts", System.currentTimeMillis());
                             aggJson.put("result", resultAggJson);
                             ret = aggJson.toString();
                         }
                         catch (Exception ex) {
-                            log.info("toJson Exception.", ex);
+                            log.error("toJson Exception.", ex);
                         }
 
                         log.info("acc={}, value1={}, ret={}" , agg, value, ret);

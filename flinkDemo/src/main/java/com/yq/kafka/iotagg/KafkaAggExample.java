@@ -4,6 +4,9 @@ package com.yq.kafka.iotagg;
  * Simple to Introduction
  * className: KafkaSingleMsgDemo
  *  {"deviceid":"xxx", "chainid":"yyyyy", "func":["min","max"], "data":{"T1031":35, "T1032":55}, "ts":234843}
+ *  从agg.in.abc1读取消息后，在新消息上执行如下操作， 也就是把原有消息的ts变为oldts，将当前时间作为ts传入到json中
+ *   tempAgg.put("ts", System.currentTimeMillis());
+     tempAgg.put("oldts", ts);
  * @author EricYang
  * @version 2019/4/28 19:16
  */
@@ -87,7 +90,7 @@ public class KafkaAggExample {
                             ret = tempAgg.toString();
                         }
                         catch (Exception ex) {
-                            log.info("ex",  ex);
+                            log.error("ex",  ex);
                         }
 
                         log.info("acc={}, value1={}, ret={}" ,acc, value, ret);

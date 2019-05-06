@@ -1,0 +1,15 @@
+
+{"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 1, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1031":50, "T1032":60}, "ts":234843}
+
+{"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 1, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1031":53, "T1032":50}, "ts":234843}
+
+{"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 1, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1031":60, "T1032":40}, "ts":234843}
+
+{"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 1, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1032":30}, "ts":234843}
+
+  T1031  min 50， avg 54.335
+  T1032  min 30，  avg 45
+
+
+
+
