@@ -1,4 +1,4 @@
-package com.yq;
+package org.iot;
 
 /**
  * Simple to Introduction
@@ -12,12 +12,8 @@ package com.yq;
  * @version 2019/4/28 19:16
  */
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.ExecutionConfig;
-import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -28,7 +24,6 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.util.serialization.KeyedSerializationSchemaWrapper;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 

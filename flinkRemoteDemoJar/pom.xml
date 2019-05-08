@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.yq</groupId>
-    <artifactId>FlinkRemoteDemoJar</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>AccumulateNode</artifactId>
+    <version>1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,7 +94,7 @@
                             <!-- 产生的jar没有添加依赖，远程运行不好 -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.yq.KafkaAccProd</mainClass>
+                            <mainClass>org.iot.KafkaAccProd</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -108,7 +108,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.yq.KafkaAccProd</mainClass>
+                            <mainClass>org.iot.KafkaAccProd</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
