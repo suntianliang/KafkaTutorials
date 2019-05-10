@@ -162,12 +162,12 @@ public class MyFoldFunction implements FoldFunction<String, String> {
 
                     long count = resultAggJson.getLongValue(COUNT);
                     resultAggJson.put(COUNT, count + 1);
-                    resultAggJson.put("data" + count, dataJson);
+                    //resultAggJson.put("data" + count, dataJson);
                     log.info("acc={}, newMsgValue={}, resultAggJson={}", acc, newMsgValue, resultAggJson);
                 }
             }
 
-            accJson.put("newts", System.currentTimeMillis());
+            accJson.put("ts", System.currentTimeMillis());
             accJson.put("result", resultAggJson);
             ret = accJson.toString();
         } catch (Exception ex) {

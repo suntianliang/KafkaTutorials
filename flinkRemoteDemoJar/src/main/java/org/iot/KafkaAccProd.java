@@ -32,19 +32,17 @@ public class KafkaAccProd {
     public static void main(String[] args) throws Exception {
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // Source topic
-        String sourceTopic = "agg.in";
-        // Sink topic
-        String sinkTopic = "agg.out";
 
         env.getConfig().setGlobalJobParameters(parameterTool);
         ExecutionConfig.GlobalJobParameters parameters = env.getConfig().getGlobalJobParameters();
         Map<String, String> map = parameters.toMap();
-        log.info("bootstrap.servers={}", map.get("bootstrap.servers"));
-        log.info("group.id={}", map.get("group.id"));
-        log.info("LimitEnabled={}", map.get("limitEnabled"));
+
+        String sourceTopic = map.get("sourceTopic");
+        String sinkTopic =  map.get("sinkTopic");
+        log.info("bootstrap.servers={}, sourceTopic={}, sinkTopic={}", map.get("bootstrap.servers"), sourceTopic, sinkTopic);
         String nodeId = map.get("nodeId");
-        log.info("nodeId={}", nodeId);
+        log.info("group.id={}, LimitEnabled={}, nodeId={}", map.get("group.id"), map.get("limitEnabled"), nodeId);
+
 
         Properties properties = parameterTool.getProperties();
         properties.putAll(parameterTool.getProperties());
