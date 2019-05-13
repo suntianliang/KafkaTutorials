@@ -1,16 +1,6 @@
 package org.iot;
 
-/**
- * Simple to Introduction
- * className: KafkaSingleMsgDemo
- * cfg
-   {"sensorCodeList": ["T1031","T1032"], "timeLimit": 2, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2}
 
- {"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 2, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1031":35, "T1032":55}, "ts":234843}
-  运行参数    --bootstrap.servers 127.0.0.1:9092 --limitEnabled 2 --timeLimit 2 --group.id grp01 --nodeId a1b2c3
- * @author EricYang
- * @version 2019/4/28 19:16
- */
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.ExecutionConfig;
@@ -27,6 +17,17 @@ import org.apache.flink.streaming.util.serialization.KeyedSerializationSchemaWra
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Simple to Introduction
+ * className: KafkaAccProd
+ * cfg
+ {"sensorCodeList": ["T1031","T1032"], "timeLimit": 2, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2}
+
+ {"deviceId":"001", "chainId":"c1", "nodeId":"n1", "cfg":{"sensorCodeList": ["T1031","T1032"], "timeLimit": 2, "calMAX": false, "calMIN": true, "calAVG": true, "limitEnabled": 2},"data":{"T1031":35, "T1032":55}, "ts":234843}
+ 运行参数   --bootstrap.servers 127.0.0.1:9092 --limitEnabled 3 --timeLimit 2  --countLimit 2 --group.id grp01 --nodeId a1b2c3  --nodeId a1b2c3 --sourceTopic acc.in.a1b2c3 --sinkTopic acc.out
+ * @author EricYang
+ * @version 2019/4/28 19:16
+ */
 @Slf4j
 public class KafkaAccProd {
     public static void main(String[] args) throws Exception {
@@ -102,7 +103,6 @@ public class KafkaAccProd {
                     new KeyedSerializationSchemaWrapper<String>(new SimpleStringSchema()),
                     properties,
                     FlinkKafkaProducer.Semantic.AT_LEAST_ONCE);
-            myProducer.setWriteTimestampToKafka(true);
             windowCounts.addSink(myProducer);
         }
         else {

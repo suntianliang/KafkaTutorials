@@ -38,7 +38,7 @@ public class MyFoldFunction implements FoldFunction<String, String> {
 
             JSONObject dataJson = newMsgJson.getJSONObject("data");
             JSONObject cfgJson = newMsgJson.getJSONObject("cfg");
-            JSONObject resultAggJson = accJson.getJSONObject("result");
+            JSONObject resultAccJson = accJson.getJSONObject("result");
             if (dataJson != null) {
                 JSONArray jsonArray = cfgJson.getJSONArray("sensorCodeList");
                 if (jsonArray != null) {
@@ -48,17 +48,17 @@ public class MyFoldFunction implements FoldFunction<String, String> {
                     Boolean calAVG = cfgJson.getBoolean("calAVG");
                     Boolean calSUM = cfgJson.getBoolean("calSUM");
 
-                    if (resultAggJson != null) {
+                    if (resultAccJson != null) {
                         for (String sensorCode : sensorCodeList) {
                             //传感器数据可能不全，因此必须判断是否存在该传感器
                             if (dataJson.containsKey(sensorCode)) {
                                 double newSensorValue = dataJson.getLongValue(sensorCode);
                                 if (calMAX != null && calMAX) {
-                                    boolean isContain = resultAggJson.containsKey(MAX_PREFIX + sensorCode);
+                                    boolean isContain = resultAccJson.containsKey(MAX_PREFIX + sensorCode);
                                     if (isContain) {
-                                        double currentMaxValue = resultAggJson.getDoubleValue(MAX_PREFIX + sensorCode);
+                                        double currentMaxValue = resultAccJson.getDoubleValue(MAX_PREFIX + sensorCode);
                                         if (newSensorValue > currentMaxValue) {
-                                            resultAggJson.put(MAX_PREFIX + sensorCode, newSensorValue);
+                                            resultAccJson.put(MAX_PREFIX + sensorCode, newSensorValue);
                                             log.info("MAX oldMax={}, newMax={}, sensorCode={}, newSensorValue={},",
                                                     currentMaxValue, newSensorValue, sensorCode, newSensorValue);
                                         } else {
@@ -66,18 +66,18 @@ public class MyFoldFunction implements FoldFunction<String, String> {
                                                     currentMaxValue, sensorCode, newSensorValue);
                                         }
                                     } else {
-                                        resultAggJson.put(MAX_PREFIX + sensorCode, newSensorValue);
+                                        resultAccJson.put(MAX_PREFIX + sensorCode, newSensorValue);
                                         log.info("MAX no oldMax, newMax={}, sensorCode={}, newSensorValue={},",
                                                 sensorCode, newSensorValue);
                                     }
                                 }
 
                                 if (calMIN != null && calMIN) {
-                                    boolean isContain = resultAggJson.containsKey(MIN_PREFIX + sensorCode);
+                                    boolean isContain = resultAccJson.containsKey(MIN_PREFIX + sensorCode);
                                     if (isContain) {
-                                        double currentMinValue = resultAggJson.getDoubleValue(MIN_PREFIX + sensorCode);
+                                        double currentMinValue = resultAccJson.getDoubleValue(MIN_PREFIX + sensorCode);
                                         if (newSensorValue < currentMinValue) {
-                                            resultAggJson.put(MIN_PREFIX + sensorCode, newSensorValue);
+                                            resultAccJson.put(MIN_PREFIX + sensorCode, newSensorValue);
                                             log.info("MIN oldMin={}, newMin={}, sensorCode={}, newSensorValue={},",
                                                     currentMinValue, newSensorValue, sensorCode, newSensorValue);
                                         } else {
@@ -85,71 +85,71 @@ public class MyFoldFunction implements FoldFunction<String, String> {
                                                     currentMinValue, sensorCode, newSensorValue);
                                         }
                                     } else {
-                                        resultAggJson.put(MIN_PREFIX + sensorCode, newSensorValue);
+                                        resultAccJson.put(MIN_PREFIX + sensorCode, newSensorValue);
                                         log.info("MIN no oldMin, newMin={}, sensorCode={}, newSensorValue={},",
                                                 sensorCode, newSensorValue);
                                     }
                                 }
 
                                 if (calSUM != null && calSUM) {
-                                    double currentSumValue = resultAggJson.getDoubleValue(SUM_PREFIX + sensorCode);
+                                    double currentSumValue = resultAccJson.getDoubleValue(SUM_PREFIX + sensorCode);
                                     double newSum = currentSumValue + newSensorValue;
-                                    resultAggJson.put(SUM_PREFIX + sensorCode, currentSumValue + newSensorValue);
+                                    resultAccJson.put(SUM_PREFIX + sensorCode, currentSumValue + newSensorValue);
                                     log.info("SUM oldSum={}, newSum={}, sensorCode={}, newSensorValue={},",
                                             currentSumValue, newSum, sensorCode, newSensorValue);
                                 }
 
                                 //when getting avg, the max is necessary.
                                 if (calAVG != null && calAVG) {
-                                    long count = resultAggJson.getLongValue(COUNT);
+                                    long count = resultAccJson.getLongValue(COUNT);
                                     //if the sum is not calculated, compute it now
                                     if (calSUM == null || !calSUM) {
                                         //no need to check whether sum contain key for the default is 0
-                                        double currentSumValue = resultAggJson.getLongValue(SUM_PREFIX + sensorCode);
+                                        double currentSumValue = resultAccJson.getLongValue(SUM_PREFIX + sensorCode);
                                         double newSum = currentSumValue + newSensorValue;
-                                        resultAggJson.put(SUM_PREFIX + sensorCode, currentSumValue + newSensorValue);
+                                        resultAccJson.put(SUM_PREFIX + sensorCode, currentSumValue + newSensorValue);
                                         log.info("SUM oldSum={}, newSum={}, sensorCode={}, newSensorValue={}",
                                                 currentSumValue, newSum, sensorCode, newSensorValue);
                                     }
 
                                     //calculate the avg according to sum and count. avg should be double.
-                                    double currentSumValue = resultAggJson.getDoubleValue(SUM_PREFIX + sensorCode);
-                                    double currentAvgValue = resultAggJson.getDoubleValue(AVG_PREFIX + sensorCode);
+                                    double currentSumValue = resultAccJson.getDoubleValue(SUM_PREFIX + sensorCode);
+                                    double currentAvgValue = resultAccJson.getDoubleValue(AVG_PREFIX + sensorCode);
                                     double newAvgValue = currentSumValue / (count + 1);
-                                    resultAggJson.put(AVG_PREFIX + sensorCode, newAvgValue);
+                                    resultAccJson.put(AVG_PREFIX + sensorCode, newAvgValue);
                                     log.info("AVG oldAvg={}, currentSumValue={}, count={}, newAvg={}, sensorCode={}",
                                             currentAvgValue, currentSumValue, count, newAvgValue, sensorCode);
                                 }
                             }
                         }
                     } else {
-                        resultAggJson = new JSONObject();
+                        resultAccJson = new JSONObject();
                         //如果初始化没有值就给result附上值
                         for (String sensorCode : sensorCodeList) {
                             //传感器数据可能不全，因此必须判断是否存在该传感器
                             if (dataJson.containsKey(sensorCode)) {
                                 double newSensorValue = dataJson.getDoubleValue(sensorCode);
                                 if (calMAX != null && calMAX) {
-                                    resultAggJson.put(MAX_PREFIX + sensorCode, newSensorValue);
+                                    resultAccJson.put(MAX_PREFIX + sensorCode, newSensorValue);
                                     log.info("MAX initMax={}, sensorCode={}", newSensorValue, sensorCode);
                                 }
 
                                 if (calMIN != null && calMIN) {
-                                    resultAggJson.put(MIN_PREFIX + sensorCode, newSensorValue);
+                                    resultAccJson.put(MIN_PREFIX + sensorCode, newSensorValue);
                                     log.info("MIN initMin={}, sensorCode={}", newSensorValue, sensorCode);
                                 }
 
                                 if (calSUM != null && calSUM) {
-                                    resultAggJson.put(SUM_PREFIX + sensorCode, newSensorValue);
+                                    resultAccJson.put(SUM_PREFIX + sensorCode, newSensorValue);
                                     log.info("SUM initSum={}, sensorCode={}", newSensorValue, sensorCode);
                                 }
 
                                 if (calAVG != null && calAVG) {
                                     if (calSUM == null || !calSUM) {
-                                        resultAggJson.put(SUM_PREFIX + sensorCode, newSensorValue);
+                                        resultAccJson.put(SUM_PREFIX + sensorCode, newSensorValue);
                                         log.info("SUM initSum={} in avg, sensorCode={}", newSensorValue, sensorCode);
                                     }
-                                    resultAggJson.put(AVG_PREFIX + sensorCode, newSensorValue);
+                                    resultAccJson.put(AVG_PREFIX + sensorCode, newSensorValue);
                                     log.info("AVG initAvg={}, sensorCode={}", newSensorValue, sensorCode);
                                 }
                             }
@@ -160,15 +160,15 @@ public class MyFoldFunction implements FoldFunction<String, String> {
                         accJson.put("nodeId", newMsgJson.getString("nodeId"));
                     }
 
-                    long count = resultAggJson.getLongValue(COUNT);
-                    resultAggJson.put(COUNT, count + 1);
-                    //resultAggJson.put("data" + count, dataJson);
-                    log.info("acc={}, newMsgValue={}, resultAggJson={}", acc, newMsgValue, resultAggJson);
+                    long count = resultAccJson.getLongValue(COUNT);
+                    resultAccJson.put(COUNT, count + 1);
+                    //resultAccJson.put("data" + count, dataJson);
+                    log.info("acc={}, newMsgValue={}, resultAccJson={}", acc, newMsgValue, resultAccJson);
                 }
             }
 
             accJson.put("ts", System.currentTimeMillis());
-            accJson.put("result", resultAggJson);
+            accJson.put("result", resultAccJson);
             ret = accJson.toString();
         } catch (Exception ex) {
             log.error("toJson Exception.", ex);
