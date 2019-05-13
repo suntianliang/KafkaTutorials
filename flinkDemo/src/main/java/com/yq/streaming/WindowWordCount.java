@@ -1,6 +1,5 @@
 package com.yq.streaming;
 
-import com.yq.util.WordCountData;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;

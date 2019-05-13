@@ -20,14 +20,21 @@ import java.util.Properties;
 /**
  *  className: KafkaConnector
  *
- *  iot-temp topic输入内容类似， hello Java， Hello Test， Hello Python, 先统计为DataStream<Tuple2<String, Integer>>
- *  然后将DataStream<Tuple2<String, Integer>>转换为DataStream<String> ， 最后将结果写入到kafka中，结果为Kafka and Flink says: (hello,3)格式
+ *  iot-temp topic输入内容类似， hello Java、Hello Test、Hello Python, 先转换为DataStream<Tuple2<String, Integer>>
+ *  然后将DataStream<Tuple2<String, Integer>>转换为DataStream<String>， 最后将结果写入到kafka中，
+ *  结果为以下内容。 每一行为一条kafka消息
+ *  Kafka and Flink says: (java,1)
+ *  Kafka and Flink says: (hello,1)
+ *  Kafka and Flink says: (hello,2)
+ *  Kafka and Flink says: (test,1)
+ *  Kafka and Flink says: (hello,3)
+ *  Kafka and Flink says: (python,1)
  * @author EricYang
  * @version 2019/3/11 14:50
  */
 public class KafkaConnector {
-    //private static final String KAFKA_BROKERS = "localhost:9092";
-    private static final String KAFKA_BROKERS = "10.76.3.70:9092";
+    private static final String KAFKA_BROKERS = "localhost:9092";
+
     public static void main(String[] args) throws Exception {
 
         final ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -38,11 +45,11 @@ public class KafkaConnector {
         env.getConfig().setGlobalJobParameters(parameterTool);
 
         Properties properties = new Properties();
-        properties.put("group.id", "flink-kafka-connector");
-        properties.put("bootstrap.servers", KAFKA_BROKERS);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "flink-kafka-connector");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,  "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
 
         DataStream<String> messageStream = env.addSource(

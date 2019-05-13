@@ -17,7 +17,6 @@
     </properties>
 
     <dependencies>
-
         <!-- Flink dependencies -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -25,15 +24,7 @@
             <version>${flink.version}</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils-junit</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
         <!-- core dependencies -->
-
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
@@ -43,12 +34,6 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-twitter_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
 
@@ -71,6 +56,11 @@
         </dependency>
 
         <!-- test dependencies -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils-junit</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -127,7 +117,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.31</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

@@ -1,4 +1,4 @@
-package com.yq.util;
+package com.yq.streaming;
 
 /**
  * Simple to Introduction

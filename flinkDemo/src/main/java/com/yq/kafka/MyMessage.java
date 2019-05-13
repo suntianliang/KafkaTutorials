@@ -20,7 +20,6 @@ public class MyMessage{
     private String payload;
     private Date timestamp;
 
-
     public static MyMessage fromString( String s ){
         String[] tokens = s.split( "," );
         if(tokens.length != 3) {

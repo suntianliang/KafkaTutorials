@@ -18,7 +18,7 @@ import java.util.Properties;
 /**
  * className: KafkaCustomizedMsg
  *
- *  topic中输入的hello Java，  输出topic中的内容为1,hello,1552371230138l和1,java,1552371236392l
+ *  topic中输入hello Java，  输出topic中的内容为1,hello,1552371230138l和1,java,1552371236392l
  * @author EricYang
  * @version 2019/3/11 14:50
  */
@@ -32,11 +32,11 @@ public class KafkaCustomizedMsg {
         env.getConfig().setGlobalJobParameters(parameterTool);
 
         Properties properties = new Properties();
-        properties.put("group.id", "flink-kafka-connector");
-        properties.put("bootstrap.servers", KAFKA_BROKERS);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "flink-kafka-connector");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,  "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
 
         DataStream<String> messageStream = env.addSource(

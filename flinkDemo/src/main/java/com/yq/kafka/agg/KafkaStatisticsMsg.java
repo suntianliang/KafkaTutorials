@@ -29,7 +29,7 @@ import java.util.Properties;
 public class KafkaStatisticsMsg {
     private static final String KAFKA_BROKERS = "localhost:9092";
     private static final long WINDOW_SIZE = 60L;
-    private DataStream<MyStatisticsMsg> windowCounts;
+
 
     public static void main(String[] args) throws Exception {
 
@@ -39,11 +39,11 @@ public class KafkaStatisticsMsg {
         env.getConfig().setGlobalJobParameters(parameterTool);
 
         Properties properties = new Properties();
-        properties.put("group.id", "flink-kafka-connector");
-        properties.put("bootstrap.servers", KAFKA_BROKERS);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "flink-kafka-connector");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,  "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
 
         DataStream<String> text = env.addSource(

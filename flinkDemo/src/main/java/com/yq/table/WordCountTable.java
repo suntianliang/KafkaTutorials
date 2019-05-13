@@ -13,8 +13,9 @@ import org.apache.flink.table.api.java.BatchTableEnvironment;
  * <p>This example shows how to:
  *  - Convert DataSets to Tables
  *  - Apply group, aggregate, select, and filter operations
- * className: WordCountTable
+ *  className: WordCountTable
  *  官方例子，为了在本地运行稍加改动。 https://github.com/apache/flink/blob/release-1.7.2/flink-examples/flink-examples-table
+ *  按照单词频率进行过滤
  * @author EricYang
  * @version 2019/3/13 16:54
  */
@@ -25,7 +26,6 @@ public class WordCountTable {
     // *************************************************************************
     //     PROGRAM
     // *************************************************************************
-
     public static void main(String[] args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.createCollectionsEnvironment();
         BatchTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);

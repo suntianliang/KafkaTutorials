@@ -35,11 +35,11 @@ public class KafkaStatisticsMsg2 {
         env.getConfig().setGlobalJobParameters(parameterTool);
 
         Properties properties = new Properties();
-        properties.put("group.id", "flink-kafka-connector");
-        properties.put("bootstrap.servers", KAFKA_BROKERS);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "flink-kafka-connector");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,  "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
 
         DataStream<String> text = env.addSource(
