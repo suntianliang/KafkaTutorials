@@ -1,4 +1,4 @@
-package com.yq.kafka;
+package com.yq.job;
 
 /**
  * Simple to Introduction

@@ -123,6 +123,8 @@ public class KafkaAccMoreDemo {
             for (String key : keySet) {
                     out.collect(new Tuple5<>(key, dataJson.getLong(key), dataJson.getLong(key), dataJson.getLong(key), dataJson.getLong(key)));
             }
+            //Tuple6 的最后一个座位消息个个数就能实现平均值了, 每次消息到达count 为1， 最后输出的时候进行平均也就是将sum和count相除
+            //out.collect(new Tuple5<>("msgCount", 1L, 1L, 1L, 1L));
         }
     }
 }
