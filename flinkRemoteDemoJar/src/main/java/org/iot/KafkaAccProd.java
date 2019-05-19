@@ -2,13 +2,18 @@ package org.iot;
 
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
@@ -59,6 +64,31 @@ public class KafkaAccProd {
         // 读取Kafka消息
         DataStream<String> input = env.addSource(consumer);
 
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        //The interval between watermarks in milliseconds.
+        //设置AssignerWithPeriodicWatermarks的间隔
+        env.getConfig().setAutoWatermarkInterval(1000);
+
+        consumer.assignTimestampsAndWatermarks(new AscendingTimestampExtractor<String>() {
+            @Override
+            public long extractAscendingTimestamp(String newMsgValue) {
+                //get ts from json
+                JSONObject newMsgJson = JSON.parseObject(newMsgValue);
+                long ts;
+                if (newMsgJson.containsKey("ts")) {
+                    ts = newMsgJson.getLong("ts");
+                    log.info("new msg ts={}", ts);
+                }
+                else if (newMsgJson.containsKey("timestamp")) {
+                    ts = newMsgJson.getLong("timestamp");
+                }
+                else {
+                    ts = System.currentTimeMillis();
+                }
+
+                return ts;
+            }
+        });
 
         int limitType = Integer.valueOf(map.get("limitEnabled"));
         if (limitType == 2) {
