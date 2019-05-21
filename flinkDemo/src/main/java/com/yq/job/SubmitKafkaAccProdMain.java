@@ -27,7 +27,7 @@ import org.apache.http.util.EntityUtils;
 public class SubmitKafkaAccProdMain {
     private static final String KAFKA_BROKERS = "192.168.1.1:9092,192.168.1.2:9092";
     private static final String FLINK_BROKERS_URL = "http://192.168.1.3:8081";
-    private static final String JAR_ID = "7f563a0f-03a3-41e7-997f-0e2bd9641f30_AccumulateNode-1.0-jar-with-dependencies.jar";
+    private static final String JAR_ID = "dca913ac-5064-44cf-9a2c-ede2eb12d432_AccumulateNode-1.2-jar-with-dependencies.jar";
     private static final String ENTRY_CLASS = "org.iot.KafkaAccProd";
 
     public static void main(String[] args) throws Exception {
@@ -36,6 +36,8 @@ public class SubmitKafkaAccProdMain {
         stringBuilder.append("--bootstrap.servers \"").append(KAFKA_BROKERS).append("\"");
         stringBuilder.append("  --group.id ").append("grp01");
         stringBuilder.append("  --limitEnabled ").append(2);
+        stringBuilder.append("  --windowType ").append(2);
+        stringBuilder.append("  --slideSize ").append(1);
         stringBuilder.append("  --timeLimit ").append(2);
         stringBuilder.append("  --countLimit ").append(5);
         stringBuilder.append("  --nodeId ").append("remote1");
@@ -80,7 +82,7 @@ public class SubmitKafkaAccProdMain {
                     log.warn("http response entity no jobId.");
                 }
             } else {
-                log.error("error responseCode={}", statusCode);
+                log.error("error respCode={}, resp={}", statusCode, response);
             }
 
             response.close();
